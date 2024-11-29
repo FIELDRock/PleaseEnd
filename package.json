@@ -53,9 +53,9 @@
     "@strapi/strapi": "^4.15.0",
     "express": "^4.21.1",
     "react-router-dom": "^6.27.0",
+    "react-scripts": "^5.0.1",
     "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7",
-    "react-scripts": "5.0.1",
     "sweetalert2": "^11.14.5"
   }
 }
