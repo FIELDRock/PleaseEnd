@@ -52,7 +52,7 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
 
-    # Step 3: Test Docker Image for Backend
+  # Step 3: Test Docker Image for Backend
   test-backend-docker-image:
     needs: build-backend-docker
     runs-on: ubuntu-latest
@@ -70,12 +70,18 @@ jobs:
           docker run -d --name test-backend-container --memory="4g" --memory-swap="8g" ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
 
       - name: Wait for Docker container to be ready
-        run: sleep 30
+        run: |
+          for i in {1..10}; do
+            if docker exec test-backend-container npm --version; then
+              echo "Container is ready";
+              break;
+            fi;
+            echo "Waiting for container to be ready...";
+            sleep 5;
+          done
 
       - name: Check if Docker container is running
-        run: |
-          docker ps -a
-          docker start test-backend-container
+        run: docker ps
 
       - name: Run Automated Tests in Docker Container for Backend
         run: |
