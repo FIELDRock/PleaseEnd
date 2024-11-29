@@ -1,4 +1,4 @@
-name: CI - Comprehensive Backend Testing
+name: CI - Backend Docker Testing
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  build-and-prepare:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,52 +17,27 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       
-      - name: Build Backend Docker Image
+      - name: Build and Push Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest -f backend/Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
-
-  container-initialization:
-    needs: build-and-prepare
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pull Docker Image
+      
+      - name: Pull and Run Container
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
-          
-      - name: Start Container
-        run: |
           docker run -d --name test-backend-container \
             --memory="8g" \
             --memory-swap="16g" \
             ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest \
             tail -f /dev/null
-
-  run-tests:
-    needs: container-initialization
-    runs-on: ubuntu-latest
-    steps:
-      - name: Execute Backend Tests
-        run: |
-          docker exec test-backend-container npm run test-back \
-            -- --maxWorkers=2 \
-            --runInBand \
-            --verbose
       
-      - name: Capture Test Logs
-        if: failure()
+      - name: Run Backend Tests
         run: |
-          docker logs test-backend-container
-
-  cleanup:
-    if: always()
-    needs: 
-      - build-and-prepare
-      - container-initialization
-      - run-tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove Container
+          docker ps
+          docker exec test-backend-container npm run test-back
+      
+      - name: Cleanup
+        if: always()
         run: |
           docker stop test-backend-container || true
           docker rm test-backend-container || true
