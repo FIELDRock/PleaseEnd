@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # ติดตั้ง dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install --force
 
 RUN npm install --save-dev jest --force
 
