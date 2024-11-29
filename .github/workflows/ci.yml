@@ -9,11 +9,9 @@ jobs:
   test-backend-source-code:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       
-      - name: Set up Node.js for Backend
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 20
       
@@ -22,7 +20,7 @@ jobs:
           cd backend
           npm install
       
-      - name: Run Jest Tests for Backend
+      - name: Run Jest Tests
         run: |
           cd backend
           npm run test-back
@@ -31,46 +29,34 @@ jobs:
     needs: test-backend-source-code
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       
-      - name: Log in to DockerHub
+      - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       
-      - name: Build Docker Image for Backend
+      - name: Build and Push Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest -f backend/Dockerfile .
-      
-      - name: Push Docker Image to DockerHub
-        run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
       
-      - name: Pull and Run Docker Image for Backend
+      - name: Run Docker Container
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
           docker run -d --name test-backend-container \
             --memory="8g" \
             --memory-swap="16g" \
-            --memory-reservation="4g" \
-            ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+            ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest \
+            sh -c "sleep 30 && npm run test-back"
       
-      - name: Check Memory Usage
-        run: docker exec test-backend-container free -h
+      - name: Container Logs
+        if: failure()
+        run: docker logs test-backend-container
       
-      - name: Run Automated Tests in Docker Container
-        env:
-          NODE_OPTIONS: --max_old_space_size=6144
-        run: |
-          docker exec test-backend-container npm run test-back \
-            -- --maxWorkers=2 \
-            --runInBand \
-            --verbose
-      
-      - name: Clean Up Docker Container
+      - name: Cleanup Container
         if: always()
         run: |
-          docker stop test-backend-container
-          docker rm test-backend-container
+          docker stop test-backend-container || true
+          docker rm test-backend-container || true
