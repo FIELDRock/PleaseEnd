@@ -18,11 +18,9 @@ RUN echo "REACT_APP_DEV_URL=http://$PUBLIC_IP:1337" >> .env && \
     echo "REACT_APP_STRIPE_APP_KEY=$(openssl rand -hex 32)" >> .env && \
     echo "REACT_APP_STRIPE_PUBLISHABLE_KEY=$(openssl rand -hex 32)" >> .env
 
-# สร้าง production build
-RUN npm run build
+    
+# เปิด port ที่ต้องการ
+EXPOSE 3000
 
-# ใช้ nginx เพื่อให้ไฟล์ static
-FROM nginx:alpine
-COPY --from=0 /usr/src/app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# รันแอปพลิเคชัน
+CMD ["npm", "start"]
