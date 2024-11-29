@@ -22,7 +22,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --coverage",
-    "test-front": "jest **/client/src/tests/Register",
+    "test-front": "jest **/src/tests/Register",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
