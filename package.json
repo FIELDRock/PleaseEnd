@@ -15,6 +15,7 @@
     "supertest": "^7.0.0"
   },
   "scripts": {
+    "start": "react-scripts start",
     "test": "jest --coverage",
     "test-front": "jest **/client/src/tests/Register",
     "test-back": "jest **/tests/account.test.js"
