@@ -10,8 +10,6 @@ COPY package*.json ./
 # ติดตั้ง dependencies
 RUN npm install --force
 
-RUN npm install --save-dev jest --force
-
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY . .
 
