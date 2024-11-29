@@ -70,7 +70,7 @@ jobs:
       - name: Run Frontend Tests
         run: |
           docker ps
-          docker exec test-frontend-container sh -c "cd /app/client && npm install && npm run test-front"
+          docker exec test-frontend-container sh -c "pwd && ls && npm run test-front"
       
       - name: Frontend Cleanup
         if: always()
