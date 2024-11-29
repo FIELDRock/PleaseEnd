@@ -17,7 +17,7 @@
   "scripts": {
     "test": "jest --coverage",
     "test-front": "jest client/src/tests/Register",
-    "test-back": "jest backend/tests/account.test.js"
+    "test-back": "jest backend/__test__/account.test.js"
   },
   "jest": {
     "transform": {

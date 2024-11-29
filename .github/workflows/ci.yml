@@ -27,7 +27,7 @@ jobs:
       - name: Run Jest Tests for Backend
         run: |
           cd backend
-          npm run test-back -- --runInBand
+          npm run test-back
 
   # Step 2: Build Docker Image for Backend
   build-backend-docker:
@@ -71,12 +71,9 @@ jobs:
 
       - name: Run Automated Tests in Docker Container for Backend
         run: |
-          docker exec test-backend-container npm run test-back -- --runInBand --maxWorkers=2
+          docker exec test-backend-container npm run test-back 
 
       - name: Clean Up Docker Container for Backend
         run: |
           docker stop test-backend-container
           docker rm test-backend-container
-
-
-

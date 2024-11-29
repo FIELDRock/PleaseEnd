@@ -8,7 +8,7 @@
     "start": "strapi start",
     "build": "strapi build",
     "test": "jest --coverage",
-    "test-back": "jest backend/tests/account.test.js",
+    "test-back": "jest **/tests/account.test.js",
     "strapi": "strapi",
     "deploy": "strapi deploy"
   },
@@ -43,5 +43,11 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "supertest": "^6.3.3"
-  }
+  },
+  "jest": {
+  "testMatch": [
+    "**/tests/account.test.js"
+  ]
+}
+
 }
