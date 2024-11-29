@@ -10,6 +10,8 @@ COPY package*.json ./
 # ติดตั้ง dependencies
 RUN npm install --legacy-peer-deps
 
+RUN npm install --save-dev jest --force
+
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY . .
 
