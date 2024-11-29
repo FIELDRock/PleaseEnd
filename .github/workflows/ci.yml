@@ -1,4 +1,4 @@
-name: CI - Test Source Code and Docker Image
+name: CI - Comprehensive Backend Testing
 
 on:
   push:
@@ -6,27 +6,7 @@ on:
       - '*'
 
 jobs:
-  test-backend-source-code:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      
-      - name: Install Backend Dependencies
-        run: |
-          cd backend
-          npm install
-      
-      - name: Run Jest Tests
-        run: |
-          cd backend
-          npm run test-back
-
-  build-backend-docker:
-    needs: test-backend-source-code
+  build-and-prepare:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,26 +17,52 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       
-      - name: Build and Push Docker Image
+      - name: Build Backend Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest -f backend/Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
-      
-      - name: Run Docker Container
+
+  container-initialization:
+    needs: build-and-prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Docker Image
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+          
+      - name: Start Container
+        run: |
           docker run -d --name test-backend-container \
             --memory="8g" \
             --memory-swap="16g" \
             ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest \
-            sh -c "sleep 30 && npm run test-back"
+            tail -f /dev/null
+
+  run-tests:
+    needs: container-initialization
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Backend Tests
+        run: |
+          docker exec test-backend-container npm run test-back \
+            -- --maxWorkers=2 \
+            --runInBand \
+            --verbose
       
-      - name: Container Logs
+      - name: Capture Test Logs
         if: failure()
-        run: docker logs test-backend-container
-      
-      - name: Cleanup Container
-        if: always()
+        run: |
+          docker logs test-backend-container
+
+  cleanup:
+    if: always()
+    needs: 
+      - build-and-prepare
+      - container-initialization
+      - run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove Container
         run: |
           docker stop test-backend-container || true
           docker rm test-backend-container || true
