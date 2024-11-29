@@ -1,5 +1,5 @@
 name: CI - Test Source Code and Docker Image
- 
+
 on:
   push:
     branches:
@@ -67,11 +67,14 @@ jobs:
       - name: Pull and Run Docker Image for Backend
         run: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
-          docker run -d --name test-backend-container ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+          docker run -d --name test-backend-container --memory="4g" --memory-swap="8g" ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+
+      - name: Wait for Docker container to be ready
+        run: sleep 10
 
       - name: Run Automated Tests in Docker Container for Backend
         run: |
-          docker exec test-backend-container npm run test-back 
+          docker exec test-backend-container npm run test-back -- --runInBand
 
       - name: Clean Up Docker Container for Backend
         run: |
