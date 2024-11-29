@@ -8,6 +8,7 @@
     "@mui/material": "^5.10.17",
     "@stripe/react-stripe-js": "^1.16.1",
     "@stripe/stripe-js": "^1.46.0",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.2.1",
     "client": "file:",
@@ -22,7 +23,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --coverage",
-    "test-front": "jest client/src/tests/Register",
+    "test-front": "jest **/client/src/tests/Register",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,6 +51,9 @@
       "!src/index.js",
       "!src/serviceWorker.js",
       "!src/reportWebVitals.js"
+    ],
+    "testMatch": [
+      "**/src/tests/Register.test.js"
     ],
     "coverageReporters": [
       "text",
