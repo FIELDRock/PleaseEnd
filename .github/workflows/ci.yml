@@ -71,7 +71,7 @@ jobs:
 
       - name: Run Automated Tests in Docker Container for Backend
         run: |
-          docker exec test-backend-container npm run test-back -- --runInBand
+          docker exec test-backend-container npm run test-back
 
       - name: Clean Up Docker Container for Backend
         run: |
