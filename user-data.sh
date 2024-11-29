@@ -6,4 +6,4 @@ sudo service docker start
 sudo usermod -aG docker ec2-user
 
 # Pull and run the Docker container
-sudo docker run -d -p 3000:3000 --name test-frontend-container fieldrockcs/360_frontend_image_test:latest
+sudo docker run -d -p 80:3000 --name test-frontend-container fieldrockcs/360_frontend_image_test:latest
