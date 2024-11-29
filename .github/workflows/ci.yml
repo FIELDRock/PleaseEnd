@@ -1,0 +1,151 @@
+name: CI - Test Source Code and Docker Image
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  # Step 1: Test Backend Source Code
+  test-backend-source-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js for Backend
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Jest Tests for Backend
+        run: |
+          cd backend
+          npm run test-back
+
+  # Step 2: Build Docker Image for Backend
+  build-backend-docker:
+    needs: test-backend-source-code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build Docker Image for Backend
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest -f backend/Dockerfile .
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+
+  # Step 3: Test Docker Image for Backend
+  test-backend-docker-image:
+    needs: build-backend-docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Pull and Run Docker Image for Backend
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+          docker run -d --name test-backend-container ${{ secrets.DOCKER_USERNAME }}/cs360_backend_image_test:latest
+
+      - name: Run Automated Tests in Docker Container for Backend
+        run: |
+          docker exec test-backend-container npm run test-back 
+
+      - name: Clean Up Docker Container for Backend
+        run: |
+          docker stop test-backend-container
+          docker rm test-backend-container
+
+  # Step 4: Test Client Source Code
+  test-client-source-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js for Client
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Client Dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: Run Jest Tests for Client
+        run: |
+          cd client
+          npm run test-front
+
+  # Step 5: Build Docker Image for Client
+  build-client-docker:
+    needs: test-client-source-code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build Docker Image for Client
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_client_image_test:latest -f client/Dockerfile .
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/cs360_client_image_test:latest
+
+  # Step 6: Test Docker Image for Client
+  test-client-docker-image:
+    needs: build-client-docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Docker
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Pull and Run Docker Image for Client
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/cs360_client_image_test:latest
+          docker run -d --name test-client-container ${{ secrets.DOCKER_USERNAME }}/cs360_client_image_test:latest
+
+      - name: Run Automated Tests in Docker Container for Client
+        run: |
+          docker exec test-client-container npm run test-front 
+
+      - name: Clean Up Docker Container for Client
+        run: |
+          docker stop test-client-container
+          docker rm test-client-container
