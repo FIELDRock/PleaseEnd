@@ -53,11 +53,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       
-      - name: Install Frontend Dependencies
-        run: |
-          cd client
-          npm install
-      
       - name: Build and Push Frontend Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/cs360_frontend_image_test:latest -f client/Dockerfile .
@@ -69,14 +64,13 @@ jobs:
           docker run -d --name test-frontend-container \
             --memory="8g" \
             --memory-swap="16g" \
-            -w /app/client \
             ${{ secrets.DOCKER_USERNAME }}/cs360_frontend_image_test:latest \
-            sh -c "npm install && tail -f /dev/null"
+            tail -f /dev/null
       
       - name: Run Frontend Tests
         run: |
           docker ps
-          docker exec test-frontend-container npm run test-front
+          docker exec test-frontend-container sh -c "cd /app/client && npm install && npm run test-front"
       
       - name: Frontend Cleanup
         if: always()
