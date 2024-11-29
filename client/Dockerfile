@@ -10,6 +10,7 @@ COPY package*.json ./
 # ติดตั้ง dependencies
 RUN npm install --force
 
+
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY . .
 
