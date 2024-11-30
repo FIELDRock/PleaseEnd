@@ -9,7 +9,7 @@ COPY package*.json ./
 
 # ติดตั้ง dependencies
 RUN npm install --force
-
+RUN npm install react-scripts -g --force
 
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY . .
