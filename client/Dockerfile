@@ -9,8 +9,6 @@ COPY client/package*.json ./
 
 # ติดตั้ง dependencies
 RUN npm install --force
-RUN npm install --save-dev @babel/preset-react @babel/preset-env @babel/core @babel/cli @babel/plugin-syntax-jsx --force
-RUN npm install react-scripts -g --force
 
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY client/public ./public
