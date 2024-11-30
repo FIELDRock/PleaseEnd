@@ -5,6 +5,9 @@ on:
     workflows: ["CI - Build and Test"]
     types:
       - completed
+  push:
+    branches:
+      - '*'
 
 jobs:
   check-image-and-deploy:
