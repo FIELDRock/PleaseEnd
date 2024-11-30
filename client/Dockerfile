@@ -5,15 +5,15 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # คัดลอก package.json และ package-lock.json
-COPY package*.json ./
+COPY client/package*.json ./
 
 # ติดตั้ง dependencies
 RUN npm install --force
 RUN npm install react-scripts -g --force
 
 # คัดลอกโค้ดทั้งหมดไปยัง container
-COPY public ./public
-COPY src ./src
+COPY client/public ./public
+COPY client/src ./src
 
 # สร้างไฟล์ .env โดยสุ่มค่าต่าง ๆ
 RUN echo "REACT_APP_DEV_URL=http://$PUBLIC_IP:1337" >> .env && \
@@ -23,8 +23,8 @@ RUN echo "REACT_APP_DEV_URL=http://$PUBLIC_IP:1337" >> .env && \
 # Build the app
 RUN npm run build
 
-# เปิด port ที่ต้องการ
+# Expose port
 EXPOSE 3000
 
-# รันแอปพลิเคชัน
+# Start the app
 CMD ["npm", "start"]
