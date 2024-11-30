@@ -4,7 +4,31 @@ on:
   push:
     branches:
       - '*'
+      name: CD - Deploy to EC2 with Docker (Human trigger)
       
+      on:
+        workflow_run:
+          workflows: ["CI - Build and Test"]
+          types:
+            - completed
+      
+      jobs:
+        check-image-and-deploy:
+          # Only run if the CI workflow was successful
+          if: ${{ github.event.workflow_run.conclusion == 'success' }}
+          runs-on: ubuntu-latest
+      
+          steps:
+            # Existing steps remain the same
+            - name: Checkout Repository
+        
+              uses: actions/checkout@v3    
+      
+            - name: Check if Docker Images Exist
+              id: check_images
+              run: |
+                # Existing image check logic
+                ...
 
 jobs:
   check-image-and-deploy:
