@@ -16,6 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "develop": "strapi develop",
     "test": "jest --coverage",
     "test-front": "jest **/client/src/tests/Register",
     "test-back": "jest **/tests/account.test.js"

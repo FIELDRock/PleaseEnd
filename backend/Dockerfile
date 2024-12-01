@@ -28,4 +28,4 @@ RUN mkdir -p .tmp && \
 EXPOSE 1337
 
 # รันแอปพลิเคชัน
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dvelop"]
