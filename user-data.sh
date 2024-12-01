@@ -14,3 +14,8 @@ sudo usermod -aG docker ec2-user
 sudo docker pull fieldrock/cs360_frontend_image_test:latest
 docker run -d -p 3000:3000 --name cs360_frontend_container fieldrock/cs360_frontend_image_test:latest
 
+sudo docker pull fieldrock/cs360_backend_image_test:latest
+docker run -d -p 1337:1337 fieldrock/cs360_backend_image_test:lastest
+
+
+
