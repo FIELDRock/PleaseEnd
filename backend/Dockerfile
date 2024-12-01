@@ -5,10 +5,10 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # คัดลอก package.json และ package-lock.json
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # ติดตั้ง dependencies
-RUN npm install --force
+RUN npm ci --force
 
 # ติดตั้ง react และ react-dom
 RUN npm install react@^18.0.0 react-dom@^18.0.0 --force
