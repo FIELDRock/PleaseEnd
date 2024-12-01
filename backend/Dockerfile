@@ -10,6 +10,9 @@ COPY package*.json ./
 # ติดตั้ง dependencies
 RUN npm install --force
 
+# ติดตั้ง react และ react-dom
+RUN npm install react@^18.0.0 react-dom@^18.0.0 --force
+
 # คัดลอกโค้ดทั้งหมดไปยัง container
 COPY . .
 
