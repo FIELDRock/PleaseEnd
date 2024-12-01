@@ -24,9 +24,6 @@ RUN mkdir -p .tmp && \
     echo "DATABASE_FILENAME=.tmp/data.db" >> .env && \
     echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 
-# Build the application
-RUN npm run build
-
 # เปิด port ที่ต้องการ
 EXPOSE 1337
 
