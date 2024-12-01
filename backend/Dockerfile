@@ -5,7 +5,7 @@ FROM node:20
 WORKDIR /usr/src/app
 
 # คัดลอก package.json และ package-lock.json
-COPY backend/package*.json ./
+COPY package*.json ./
 
 # ติดตั้ง dependencies
 RUN npm ci --force
